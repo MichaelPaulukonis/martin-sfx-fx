@@ -1,0 +1,7 @@
+{
+    "name": "martin-sfx-fx",
+    "description": "display a google image for a random Don Martin sound effect",
+    "dependencies": {
+        "google-images": "0.1.0"
+    }
+}
