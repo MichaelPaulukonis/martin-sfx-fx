@@ -42,36 +42,72 @@
 
  **/
 
+var sfxImages = function() {
+
+    var sfx = require('./sfx.js').don_martin,
+        gim = require('google-images'),
+        _ = require('underscore');
 
 
-var sfx = require('./sfx.js').don_martin,
-    gim = require('google-images'),
-    _ = require('underscore');
+    // hunh. here I am, doing it again. hrm.
+    Array.prototype.pick = function() {
+        return this[Math.floor(Math.random()*this.length)];
+    };
+
+    // or... use https://github.com/dariusk/outslide/blob/master/index.html
+
+    // I heard of google-images from a dariusk repo, seems to be used @ https://github.com/dariusk/ao3/blob/c2f24379ca177dc02c043ff026470c208a83665b/index.sj
 
 
-// hunh. here I am, doing it again. hrm.
-Array.prototype.pick = function() {
-    return this[Math.floor(Math.random()*this.length)];
-};
+    var processResults = function(err, images, callback, blob) {
 
-// or... use https://github.com/dariusk/outslide/blob/master/index.html
+        if (err) {
+            console.log(err);
+            return;
+        };
 
-// I heard of google-images from a dariusk repo, seems to be used @ https://github.com/dariusk/ao3/blob/c2f24379ca177dc02c043ff026470c208a83665b/index.sj
+        if (images.length === 0) {
+            console.log("no images returned.");
+            // ugh.
+            return;
+        }
 
+        var img = images.pick();
 
-var martin = sfx.pick();
+        blob.image = img.url;
 
-var blob = { sound: martin.sound, description: martin.description };
+        callback(blob);
 
-var processResults = function(err, images) {
-
-    var img = images.pick();
-
-    blob.image = img.url;
-
-    console.log(blob);
-
-};
+    };
 
 
-gim.search(martin.description, processResults);
+    var callback = function(data) {
+        console.log(data);
+    };
+
+    var search = function(optCallback) {
+
+        optCallback = optCallback || callback;
+
+        var martin = sfx.pick();
+
+        var blob = { sound: martin.sound, description: martin.description };
+
+        gim.search(martin.description, function(err, images) { processResults(err, images, optCallback, blob); });
+
+    };
+
+    var setCallback = function(func) {
+
+        callback = func;
+
+    };
+
+    return {
+        Search: search,
+        SetCallback: setCallback
+    };
+
+}();
+
+module.exports = sfxImages;
